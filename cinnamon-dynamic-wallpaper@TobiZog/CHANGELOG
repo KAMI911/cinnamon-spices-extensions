@@ -1,0 +1,11 @@
+# Version 1.1
+- Compatibility with Cinnamon 5.4 and 5.8
+- Two new image sets
+
+# Version 1.0
+- Offline sun time calculation
+- Online location estimation or manual input
+- Image Configurator to config the dynamic wallpaper
+- 9 day periods
+- 6 included image sets
+- HEIF converter
