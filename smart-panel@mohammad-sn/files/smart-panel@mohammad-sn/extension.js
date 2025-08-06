@@ -14,11 +14,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+const Cvc = imports.gi.Cvc;
 const Clutter = imports.gi.Clutter;
 const GLib = imports.gi.GLib;
 const Lang = imports.lang;
 const Main = imports.ui.main;
-const Mainloop = imports.mainloop;
 const Meta = imports.gi.Meta
 const Settings = imports.ui.settings;
 const St = imports.gi.St;
@@ -34,6 +34,19 @@ const TimelineSwitcher = imports.ui.appSwitcher.timelineSwitcher;
 const ClassicSwitcher = imports.ui.appSwitcher.classicSwitcher;
 const AppSwitcher = imports.ui.appSwitcher.appSwitcher;
 
+const {
+  _sourceIds,
+  timeout_add_seconds,
+  timeout_add,
+  setTimeout,
+  clearTimeout,
+  setInterval,
+  clearInterval,
+  source_exists,
+  source_remove,
+  remove_all_sources
+} = require("./mainloopTools");
+
 
 let newSmartPanelExt = null;
 
@@ -43,29 +56,33 @@ function SmartPanelExt(metadata, orientation, panel_height, instanceId) {
 
 SmartPanelExt.prototype = {
     _init: function(metadata, orientation, panel_height, instanceId) {
-        
-        Settings.BindingDirection.BI = Settings.BindingDirection.BIDIRECTIONAL
+
+        this._control = null;
         this.settings = new Settings.ExtensionSettings(this, "smart-panel@mohammad-sn");
-        this.settings.bindProperty(Settings.BindingDirection.BI, "scroll-action"     , "scrl_action", this._onScrollActionChanged, null);
-        this.settings.bindProperty(Settings.BindingDirection.BI, "sep-scroll-action" , "sep_acts", this._onScrollSettingsChanged, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "scroll-action-up"  , "scrl_up_action",   null, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "scroll-action-down", "scrl_down_action", null, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "dblclck-action"    , "dblclck_action",   null, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "mdlclck-action"    , "mdlclck_action",   null, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "use-gestures"      , "use_gestures",     null, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "to-left-action"    , "to_left",  null,   null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "to-right-action"   , "to_right", null,   null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "vert-out-action"   , "vert_out", null,   null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "cc1-action"        , "cc1",      null,   null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "cc2-action"        , "cc2",      null,   null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "cc3-action"        , "cc3",      null,   null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "prev-fast-scroll"  , "no_fast_scroll",   null, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "scroll-delay"      , "scroll_delay",     null, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "appswitcher-style" , "switcher_style",   null, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "appswitcher-scope" , "switcher_scope",   null, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "scope-modified"    , "switcher_modified", null, null);
-        this.settings.bindProperty(Settings.BindingDirection.IN, "appswitcher-modifier", "switcher_modifier", null, null);
-        
+        this.settings.bind("scroll-action"     , "scrl_action", this._onScrollActionChanged);
+        this.settings.bind("sep-scroll-action" , "sep_acts", this._onScrollSettingsChanged);
+        this.settings.bind("scroll-action-up"  , "scrl_up_action",   null);
+        this.settings.bind("scroll-action-down", "scrl_down_action", null);
+        this.settings.bind("dblclck-action"    , "dblclck_action",   null);
+        this.settings.bind("mdlclck-action"    , "mdlclck_action",   null);
+        this.settings.bind("use-gestures"      , "use_gestures",     null);
+        this.settings.bind("to-left-action"    , "to_left",  null);
+        this.settings.bind("to-right-action"   , "to_right", null);
+        this.settings.bind("vert-out-action"   , "vert_out", null);
+        this.settings.bind("cc1-action"        , "cc1",      null);
+        this.settings.bind("cc2-action"        , "cc2",      null);
+        this.settings.bind("cc3-action"        , "cc3",      null);
+        this.settings.bind("prev-fast-scroll"  , "no_fast_scroll",   null);
+        this.settings.setValue("show-osd", global.settings.get_boolean('workspace-osd-visible'));
+        this.settings.bind("show-osd"       , "show_osd",   this._onShowOSDChanged, null);
+        this.settings.bind("scroll-delay"      , "scroll_delay",     null);
+        this.settings.bind("appswitcher-style" , "switcher_style",   null);
+        this.settings.bind("appswitcher-scope" , "switcher_scope",   null);
+        this.settings.bind("scope-modified"    , "switcher_modified", null);
+        this.settings.bind("appswitcher-modifier", "switcher_modifier", null);
+        this._onShowOSDChanged();
+        global.settings.connect("changed::workspace-osd-visible", () => { this.show_osd = global.settings.get_boolean('workspace-osd-visible') });
+
         this.cwm_settings = new Gio.Settings({ schema: "org.cinnamon.desktop.wm.preferences" });
 
         // schema location has changed around 5.4, do a try catch for maximum compatibility
@@ -77,9 +94,9 @@ SmartPanelExt.prototype = {
                 this.mos_settings = new Gio.Settings({ schema: "org.cinnamon.desktop.peripherals.mouse" });
             }
         }
-        
+
         this.muf_settings = new Gio.Settings({ schema: "org.cinnamon.muffin" });
-        
+
         //this._panel = Main.panel._centerBox;
         this._panel = Main.panel.actor;
 
@@ -87,40 +104,55 @@ SmartPanelExt.prototype = {
         this.dblb = false;
         this.dblb_T = this.mos_settings.get_int('double-click');
     },
-    
+
+    _onShowOSDChanged : function() {
+        global.settings.set_boolean('workspace-osd-visible', this.show_osd);
+    },
+
     _onScrollActionChanged : function() {
         if (this.scrl_action != "none") this.sep_acts = false;
     },
-    
+
     _onScrollSettingsChanged : function() {
         if (this.sep_acts == true ) this.scrl_action = "none";
     },
 
     disable: function() {
-        this._panel.disconnect(this.sr);
-        this._panel.disconnect(this.en);
-        this._panel.disconnect(this.lv);
-        this._panel.disconnect(this.bp);
-        this._panel.disconnect(this.br);
+        this.is_disabled = true;
+        if (this._control != null)
+            this._control.close();
+        remove_all_sources();
+        // FIXME: These lines make Cinnamon unstable!
+        //~ if (this.sr != null) this._panel.disconnect(this.sr);
+        //~ if (this.en != null) this._panel.disconnect(this.en);
+        //~ if (this.lv != null) this._panel.disconnect(this.lv);
+        //~ if (this.bp != null) this._panel.disconnect(this.bp);
+        //~ if (this.br != null) this._panel.disconnect(this.br);
     },
 
     enable: function() {
         this._panel.reactive = true;
-        this.sr = this._panel.connect('scroll-event'        , Lang.bind(this, this._onScroll));
-        this.en = this._panel.connect('enter-event'         , Lang.bind(this, this._onEntered));
-        this.lv = this._panel.connect('leave-event'         , Lang.bind(this, this._onLeave));
-        this.bp = this._panel.connect('button-press-event'  , Lang.bind(this, this._onButtonPress));
-        this.br = this._panel.connect('button-release-event', Lang.bind(this, this._onButtonRelease));
+        this.is_disabled = false;
+        //~ this.sr = this._panel.connect('scroll-event'        , Lang.bind(this, this._onScroll));
+        //~ this.en = this._panel.connect('enter-event'         , Lang.bind(this, this._onEntered));
+        //~ this.lv = this._panel.connect('leave-event'         , Lang.bind(this, this._onLeave));
+        //~ this.bp = this._panel.connect('button-press-event'  , Lang.bind(this, this._onButtonPress));
+        //~ this.br = this._panel.connect('button-release-event', Lang.bind(this, this._onButtonRelease));
+        this.sr = this._panel.connect('scroll-event'        , (actor, event) => { this._onScroll(actor, event) });
+        this.en = this._panel.connect('enter-event'         , (actor, event) => { this._onEntered(actor, event) });
+        this.lv = this._panel.connect('leave-event'         , (actor, event) => { this._onLeave(actor, event) });
+        this.bp = this._panel.connect('button-press-event'  , (actor, event) => { this._onButtonPress(actor, event) });
+        this.br = this._panel.connect('button-release-event', (actor, event) => { this._onButtonRelease(actor, event) });
     },
 
     _onEntered : function(actor, event) {
-        if (this.checkEventSource(actor, event)) return Clutter.EVENT_PROPAGATE;
+        if (this.is_disabled || this.checkEventSource(actor, event)) return Clutter.EVENT_PROPAGATE;
         this.p = false
         return;
     },
 
-    _onLeave : function(actor, event) {        
-        if (this.checkEventSource(actor, event)) return Clutter.EVENT_PROPAGATE;
+    _onLeave : function(actor, event) {
+        if (this.is_disabled || this.checkEventSource(actor, event)) return Clutter.EVENT_PROPAGATE;
         if (this.p && this.use_gestures) {
             let v = Math.abs(global.get_pointer()[0] - this.ppos[0]) < 33;
             let e = Math.abs(global.get_pointer()[1] - this.ppos[1]) > this._panel.get_height() - 2;
@@ -131,7 +163,7 @@ SmartPanelExt.prototype = {
     },
 
     _onButtonPress : function(actor, event) {
-        if (this.checkEventSource(actor, event)) return Clutter.EVENT_PROPAGATE;
+        if (this.is_disabled || this.checkEventSource(actor, event)) return Clutter.EVENT_PROPAGATE;
         let button = event.get_button();
         if (button == 1) {
             this.p = true;
@@ -142,7 +174,7 @@ SmartPanelExt.prototype = {
             }
             else{
                 this.dblb = true;
-                Mainloop.timeout_add(this.dblb_T, Lang.bind(this,function() { this.dblb = false; }));
+                timeout_add(this.dblb_T, () => { this.dblb = false; });
             }
         }
         else if (button == 2) {
@@ -152,7 +184,7 @@ SmartPanelExt.prototype = {
     },
 
     _onButtonRelease : function(actor, event) {
-        if (this.checkEventSource(actor, event)) return Clutter.EVENT_PROPAGATE;
+        if (this.is_disabled || this.checkEventSource(actor, event)) return Clutter.EVENT_PROPAGATE;
         if (this.p && this.use_gestures) {
             let v = global.get_pointer()[0] - this.ppos[0];
             if (v > 22) this.Do(this.to_right);
@@ -161,9 +193,9 @@ SmartPanelExt.prototype = {
         this.p = false;
         return;
     },
-    
+
     _onScroll : function(actor, event) {
-        if (this.checkEventSource(actor, event)) return Clutter.EVENT_PROPAGATE;
+        if (this.is_disabled || this.checkEventSource(actor, event)) return Clutter.EVENT_PROPAGATE;
         let currentTime = Date.now();
         let direction = event.get_scroll_direction();
 
@@ -190,10 +222,29 @@ SmartPanelExt.prototype = {
             if (this.scrl_action == 'adjust_opacity') {
                 let min_opacity = this.cwm_settings.get_int("min-window-opacity") * 255 / 100;
                 let m = 50;
-                m = global.window_group.opacity + m * scrollDirection;
+                m = global.window_group.get_opacity() + m * scrollDirection;
                 if (m < min_opacity) m = min_opacity;
                 if (m > 255) m = 255;
-                global.window_group.opacity = m;
+                global.window_group.set_opacity(m);
+            }
+            else if (this.scrl_action == 'adjust_volume') {
+                if (this._control == null) {
+                    this._control = new Cvc.MixerControl({ name: 'Smart Panel Volume Control' });
+                    this._control.open();
+                }
+                if (this._control.get_state() == Cvc.MixerControlState.READY) {
+                    let v = 5 * scrollDirection;
+                    global.log("Volume: " + v.toString());
+                    this._output = this._control.get_default_sink();
+                    let currentVolume = this._output.volume;
+                    let prev_muted = this._output.is_muted;
+                    let max_norm = this._control.get_vol_max_norm();
+                    this._output.volume = Math.min(Math.max(0, currentVolume + max_norm * v / 100), max_norm * 1.5);
+                    this._output.push_volume();
+                }
+                else {
+                    global.log("this._control NOT READY");
+                }
             }
             else if (this.scrl_action == 'desktop') {
                 if (Main.panel.bottomPosition) scrollDirection = -scrollDirection;
@@ -207,14 +258,37 @@ SmartPanelExt.prototype = {
                 let limit = this._lastScroll + this.scroll_delay;
                 if (this.no_fast_scroll && currentTime < limit && currentTime >= this._lastScroll) { }
                 else if (this.scrl_action == 'switch_workspace') {
-                    if(ExtensionSystem.runningExtensions['Flipper@connerdev']){
-                        if (this.Flipper){}
-                        else { this.Flipper = ExtensionSystem.extensions['Flipper@connerdev']['extension']; }
+                    this._updateWorkspaceSwitcherExt();
+                    // If we didn't find the workspace switcher extension APIs, check if we have older versions of DesktopCube or Flipper
+                    if (!this.workspaceSwitcherExt && ExtensionSystem.runningExtensions.indexOf('DesktopCube@yare') > -1 ) {
+                        //~ global.log("DesktopCube@yare DETECTED!!!");
+                        if (!this.DesktopCube) {
+                            //~ global.log("ExtensionSystem.extensions['DesktopCube@yare']['5.4']['extension']: "+Object.keys(ExtensionSystem.extensions['DesktopCube@yare']['5.4']['extension']));
+                            this.DesktopCube = ExtensionSystem.extensions['DesktopCube@yare']['5.4']['extension'];
+                        }
                         let binding = [];
                         binding.get_mask = function(){ return 0x0; };
                         if (scrollDirection == 1) binding.get_name = function(){ return 'switch-to-workspace-left'; };
                         else if (scrollDirection == -1) binding.get_name = function(){ return 'switch-to-workspace-right'; };
-                        flipper = new this.Flipper.Flipper(null, null, null, binding);
+                        let cube = new this.DesktopCube.Cube(null, null, binding);
+                        if (cube.isAnimating) {
+                            cube.destroy_requested = true;
+                        } else {
+                            cube.destroy_requested = true;
+                            cube.onDestroy();
+                        }
+                    }
+                    else
+                    if (!this.workspaceSwitcherExt && ExtensionSystem.runningExtensions.indexOf('Flipper@connerdev') > -1) {
+                        //~ global.log("Flipper@connerdev DETECTED!!!");
+                        if (!this.Flipper) {
+                           this.Flipper = ExtensionSystem.extensions['Flipper@connerdev']['5.4']['extension'];
+                        }
+                        let binding = [];
+                        binding.get_mask = function(){ return 0x0; };
+                        if (scrollDirection == 1) binding.get_name = function(){ return 'switch-to-workspace-left'; };
+                        else if (scrollDirection == -1) binding.get_name = function(){ return 'switch-to-workspace-right'; };
+                        let flipper = new this.Flipper.Flipper(null, null, binding);
                         if (flipper.is_animating) {
                             flipper.destroy_requested = true;
                         } else {
@@ -231,12 +305,15 @@ SmartPanelExt.prototype = {
                         if (this.muf_settings.get_boolean("workspace-cycle")){
                             first = last;
                             flast = 0;
-                        }    
+                        }
                         if (reqWsInex < 0) reqWsInex = first;
                         else if (reqWsInex > last) reqWsInex = flast;
                         let reqWs = global.screen.get_workspace_by_index(reqWsInex);
-                        reqWs.activate(global.get_current_time());
-                        this.showWorkspaceOSD();
+                        if (this.workspaceSwitcherExt) {
+                           this.workspaceSwitcherExt.ExtSwitchToWorkspace(reqWs);
+                        } else {
+                           reqWs.activate(global.get_current_time());
+                        }
                     }
                 }
                 else if (this.scrl_action == 'switch-windows') {
@@ -265,14 +342,14 @@ SmartPanelExt.prototype = {
         this._lastScroll = currentTime;
         return;
     },
-    
+
     checkEventSource : function(actor, event) {
         let source = event.get_source();
         let clr = (source != Main.panel._centerBox || source != Main.panel._leftBox || source != Main.panel._rightBox);
         let not_ours = (source != actor && clr);
         return not_ours;
     },
-    
+
     Do : function(action) {
         let activeWs = 0, reqWs = 0;
         switch (action) {
@@ -320,7 +397,7 @@ SmartPanelExt.prototype = {
                 break;
             case 'appswitcher' :
                     this.get_name = Lang.bind(this, function(){
-                        if (eval(this.switcher_modifier) & global.get_pointer()[2]) return this.switcher_modified; 
+                        if (eval(this.switcher_modifier) & global.get_pointer()[2]) return this.switcher_modified;
                         else return this.switcher_scope;
                         });
                     this.get_mask = function(){ return  0xFFFF; }
@@ -330,77 +407,48 @@ SmartPanelExt.prototype = {
                         if (!this._switcherIsRuning) new myCoverflowSwitcher(this);
                         this._switcherIsRuning = true;
                         let delay = global.settings.get_int("alttab-switcher-delay");
-                        Mainloop.timeout_add(delay, Lang.bind(this, function(){ this._switcherIsRuning = false; }));
+                        //~ timeout_add(delay, Lang.bind(this, function(){ this._switcherIsRuning = false; }));
+                        timeout_add(delay, () => { this._switcherIsRuning = false; });
                     }
                     else if (style == 'timeline'){
                         if (!this._switcherIsRuning) new myTimelineSwitcher(this);
                         this._switcherIsRuning = true;
                         let delay = global.settings.get_int("alttab-switcher-delay");
-                        Mainloop.timeout_add(delay, Lang.bind(this, function(){ this._switcherIsRuning = false; }));
+                        //~ timeout_add(delay, Lang.bind(this, function(){ this._switcherIsRuning = false; }));
+                        timeout_add(delay, () => { this._switcherIsRuning = false; });
                     }
                     else {
                         new myClassicSwitcher(this);
                     }
-                    
+
                 break;
         }
-        if (reqWs) { reqWs.activate(global.get_current_time()); this.showWorkspaceOSD(); }
-    },
-    
-    showWorkspaceOSD : function() {
-        this._hideWorkspaceOSD();
-        if (global.settings.get_boolean("workspace-osd-visible")) {
-            let current_workspace_index = global.screen.get_active_workspace_index();
-            let monitor = Main.layoutManager.primaryMonitor;
-            if (this._workspace_osd == null)
-                this._workspace_osd = new St.Label({style_class:'workspace-osd'});
-            this._workspace_osd.set_text(Main.getWorkspaceName(current_workspace_index));
-            this._workspace_osd.set_opacity = 0;
-            Main.layoutManager.addChrome(this._workspace_osd, { visibleInFullscreen: false, affectsInputRegion: false });
-            let workspace_osd_x = global.settings.get_int("workspace-osd-x");
-            let workspace_osd_y = global.settings.get_int("workspace-osd-y");
-            /*
-             * This aligns the osd edges to the minimum/maximum values from gsettings,
-
-             * if those are selected to be used. For values in between minimum/maximum,
-             * it shifts the osd by half of the percentage used of the overall space available
-             * for display (100% - (left and right 'padding')).
-             * The horizontal minimum/maximum values are 5% and 95%, resulting in 90% available for positioning
-             * If the user choses 50% as osd position, these calculations result the osd being centered onscreen
-             */
-            let [minX, maxX, minY, maxY] = [5, 95, 5, 95];
-            let delta = (workspace_osd_x - minX) / (maxX - minX);
-            let x = Math.round((monitor.width * workspace_osd_x / 100) - (this._workspace_osd.width * delta));
-            delta = (workspace_osd_y - minY) / (maxY - minY);
-            let y = Math.round((monitor.height * workspace_osd_y / 100) - (this._workspace_osd.height * delta));
-            this._workspace_osd.set_position(x, y);
-            let duration = global.settings.get_int("workspace-osd-duration") / 1000;
-            Tweener.addTween(this._workspace_osd, {   opacity: 255,
-                                                         time: duration,
-                                                   transition: 'linear',
-                                                   onComplete: this._fadeWorkspaceOSD,
-                                              onCompleteScope: this });
+        if (reqWs) {
+           this._updateWorkspaceSwitcherExt();
+           if (this.workspaceSwitcherExt) {
+              this.workspaceSwitcherExt.ExtSwitchToWorkspace(reqWs);
+           } else {
+              reqWs.activate(global.get_current_time());
+           }
         }
     },
 
-    _fadeWorkspaceOSD : function() {
-        if (this._workspace_osd != null) {
-            let duration = global.settings.get_int("workspace-osd-duration") / 2000;
-            Tweener.addTween(this._workspace_osd, {   opacity: 0,
-                                                         time: duration,
-                                                   transition: 'easeOutExpo',
-                                                   onComplete: this._hideWorkspaceOSD,
-                                              onCompleteScope: this });
-        }
-    },
-
-    _hideWorkspaceOSD : function() {
-        if (this._workspace_osd != null) {
-            this._workspace_osd.hide();
-            Main.layoutManager.removeChrome(this._workspace_osd);
-            this._workspace_osd.destroy();
-            this._workspace_osd = null;
-        }
+    _updateWorkspaceSwitcherExt : function() {
+       // Check if one of the workspace switcher extensions are installed or if the state has changed since we last checked
+       if (ExtensionSystem.runningExtensions.indexOf('DesktopCube@yare') > -1 ) {
+          if (!this.workspaceSwitcherExt || this.workspaceSwitcherExt !== ExtensionSystem.extensions['DesktopCube@yare']['5.4']['extension']) {
+             this.workspaceSwitcherExt = ExtensionSystem.extensions['DesktopCube@yare']['5.4']['extension'];
+          }
+       } else if (ExtensionSystem.runningExtensions.indexOf('Flipper@connerdev') > -1) {
+          if (!this.workspaceSwitcherExt || this.workspaceSwitcherExt !== ExtensionSystem.extensions['Flipper@connerdev']['5.4']['extension']) {
+             this.workspaceSwitcherExt = ExtensionSystem.extensions['Flipper@connerdev']['5.4']['extension'];
+          }
+       }
+       // Make sure the switcher extension has the required API to allow us to change to any arbitrary workspace
+       if (this.workspaceSwitcherExt && typeof this.workspaceSwitcherExt.ExtSwitchToWorkspace !== "function")
+       {
+          this.workspaceSwitcherExt =  null;
+       }
     },
 }
 
@@ -410,14 +458,14 @@ function myClassicSwitcher() {
 
 myClassicSwitcher.prototype = {
     __proto__: ClassicSwitcher.ClassicSwitcher.prototype,
-    
+
     _init: function() {
         AppSwitcher.AppSwitcher.prototype._init.apply(this, arguments);
 
         this.actor = new Cinnamon.GenericContainer({ name: 'altTabPopup',
                                                   reactive: true,
                                                   visible: false });
-        
+
         this._thumbnailTimeoutId = 0;
         this.thumbnailsVisible = false;
         this._displayPreviewTimeoutId = 0;
@@ -426,7 +474,7 @@ myClassicSwitcher.prototype = {
 
         if (!this._setupModal())
             return;
-            
+
         let styleSettings = this._binding.switcher_style;
         if (styleSettings == 'default') styleSettings = global.settings.get_string("alttab-switcher-style");
         let features = styleSettings.split('+');
@@ -438,13 +486,16 @@ myClassicSwitcher.prototype = {
 
         this._showThumbnails = this._thumbnailsEnabled && !this._iconsEnabled;
         this._showArrows = this._thumbnailsEnabled && this._iconsEnabled;
-        
+
         this._updateList(0);
 
-        this.actor.connect('get-preferred-width', Lang.bind(this, this._getPreferredWidth));
-        this.actor.connect('get-preferred-height', Lang.bind(this, this._getPreferredHeight));
-        this.actor.connect('allocate', Lang.bind(this, this._allocate));
-        
+        //~ this.actor.connect('get-preferred-width', Lang.bind(this, this._getPreferredWidth));
+        //~ this.actor.connect('get-preferred-height', Lang.bind(this, this._getPreferredHeight));
+        //~ this.actor.connect('allocate', Lang.bind(this, this._allocate));
+        this.actor.connect('get-preferred-width', () => { this._getPreferredWidth() });
+        this.actor.connect('get-preferred-height', () => { this._getPreferredHeight() });
+        this.actor.connect('allocate', () => { this._allocate() });
+
         // Need to force an allocation so we can figure out whether we
         // need to scroll when selecting
         this.actor.opacity = 0;
@@ -458,13 +509,17 @@ myClassicSwitcher.prototype = {
             this._activateSelected();
         else {
             this._disableHover();
-        
-            this.actor.connect('key-press-event', Lang.bind(this, this._keyPressEvent));
-            this.actor.connect('key-release-event', Lang.bind(this, this._keyReleaseEvent));
-            this.actor.connect('scroll-event', Lang.bind(this, this._scrollEvent));
-            this.actor.connect('button-press-event', Lang.bind(this, this.owndestroy));
+
+            //~ this.actor.connect('key-press-event', Lang.bind(this, this._keyPressEvent));
+            //~ this.actor.connect('key-release-event', Lang.bind(this, this._keyReleaseEvent));
+            //~ this.actor.connect('scroll-event', Lang.bind(this, this._scrollEvent));
+            //~ this.actor.connect('button-press-event', Lang.bind(this, this.owndestroy));
+            this.actor.connect('key-press-event', () => { this._keyPressEvent() });
+            this.actor.connect('key-release-event', () => { this._keyReleaseEvent() });
+            this.actor.connect('scroll-event', () => { this._scrollEvent() });
+            this.actor.connect('button-press-event', () => { this.owndestroy() });
             let delay = global.settings.get_int("alttab-switcher-delay");
-            this._initialDelayTimeoutId = Mainloop.timeout_add(delay, Lang.bind(this, this._show));
+            this._initialDelayTimeoutId = timeout_add(delay, () => { this._show() });
             this._currentIndex--;
         }
         return this._haveModal;
@@ -478,7 +533,7 @@ myClassicSwitcher.prototype = {
             this._activateSelected();
         return true;
     },
-    
+
     owndestroy: function() {
         this._activateSelected();
     },
@@ -490,7 +545,7 @@ function myTimelineSwitcher() {
 
 myTimelineSwitcher.prototype = {
     __proto__: TimelineSwitcher.TimelineSwitcher.prototype,
-    
+
     _init: function() {
         TimelineSwitcher.TimelineSwitcher.prototype._init.apply(this, arguments);
     },
@@ -501,13 +556,17 @@ myTimelineSwitcher.prototype = {
             this._activateSelected();
         else {
             this._disableHover();
-        
-            this.actor.connect('key-press-event', Lang.bind(this, this._keyPressEvent));
-            this.actor.connect('key-release-event', Lang.bind(this, this._keyReleaseEvent));
-            this.actor.connect('scroll-event', Lang.bind(this, this._scrollEvent));
-            this.actor.connect('button-press-event', Lang.bind(this, this.owndestroy));
+
+            //~ this.actor.connect('key-press-event', Lang.bind(this, this._keyPressEvent));
+            //~ this.actor.connect('key-release-event', Lang.bind(this, this._keyReleaseEvent));
+            //~ this.actor.connect('scroll-event', Lang.bind(this, this._scrollEvent));
+            //~ this.actor.connect('button-press-event', Lang.bind(this, this.owndestroy));
+            this.actor.connect('key-press-event', () => { this._keyPressEvent() });
+            this.actor.connect('key-release-event', () => { this._keyReleaseEvent() });
+            this.actor.connect('scroll-event', () => { this._scrollEvent() });
+            this.actor.connect('button-press-event', () => { this.owndestroy() });
             let delay = global.settings.get_int("alttab-switcher-delay");
-            this._initialDelayTimeoutId = Mainloop.timeout_add(delay, Lang.bind(this, this._show));
+            this._initialDelayTimeoutId = timeout_add(delay, () => { this._show() });
             this._currentIndex--;
         }
         return this._haveModal;
@@ -521,7 +580,7 @@ myTimelineSwitcher.prototype = {
             this._activateSelected();
         return true;
     },
-    
+
     owndestroy: function() {
         this._activateSelected();
     },
@@ -534,7 +593,7 @@ function myCoverflowSwitcher() {
 
 myCoverflowSwitcher.prototype = {
     __proto__: CoverflowSwitcher.CoverflowSwitcher.prototype,
-    
+
     _init: function() {
         CoverflowSwitcher.CoverflowSwitcher.prototype._init.apply(this, arguments);
     },
@@ -545,13 +604,17 @@ myCoverflowSwitcher.prototype = {
             this._activateSelected();
         else {
             this._disableHover();
-        
-            this.actor.connect('key-press-event', Lang.bind(this, this._keyPressEvent));
-            this.actor.connect('key-release-event', Lang.bind(this, this._keyReleaseEvent));
-            this.actor.connect('scroll-event', Lang.bind(this, this._scrollEvent));
-            this.actor.connect('button-press-event', Lang.bind(this, this.owndestroy));
+
+            //~ this.actor.connect('key-press-event', Lang.bind(this, this._keyPressEvent));
+            //~ this.actor.connect('key-release-event', Lang.bind(this, this._keyReleaseEvent));
+            //~ this.actor.connect('scroll-event', Lang.bind(this, this._scrollEvent));
+            //~ this.actor.connect('button-press-event', Lang.bind(this, this.owndestroy));
+            this.actor.connect('key-press-event', () => { this._keyPressEvent() });
+            this.actor.connect('key-release-event', () => { this._keyReleaseEvent() });
+            this.actor.connect('scroll-event', () => { this._scrollEvent() });
+            this.actor.connect('button-press-event', () => { this.owndestroy() });
             let delay = global.settings.get_int("alttab-switcher-delay");
-            this._initialDelayTimeoutId = Mainloop.timeout_add(delay, Lang.bind(this, this._show));
+            this._initialDelayTimeoutId = timeout_add(delay, () => { this._show() });
             this._currentIndex--;
         }
         return this._haveModal;
@@ -565,7 +628,7 @@ myCoverflowSwitcher.prototype = {
             this._activateSelected();
         return true;
     },
-    
+
     owndestroy: function() {
         this._activateSelected();
     },

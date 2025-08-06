@@ -6,105 +6,92 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-28 20:37+0200\n"
-"PO-Revision-Date: 2019-08-17 23:01+0300\n"
+"Report-Msgid-Bugs-To: https://github.com/linuxmint/cinnamon-spices-"
+"extensions/issues\n"
+"POT-Creation-Date: 2024-04-17 14:43-0400\n"
+"PO-Revision-Date: 2024-07-25 22:11+0300\n"
+"Last-Translator: Kimmo Kujansuu <mrkujansuu@gmail.com>\n"
 "Language-Team: \n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.6\n"
-"Last-Translator: \n"
+"X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: fi\n"
 
-#: extension.js:166
+#: extension.js:199
 #, javascript-format
 msgid "%s enabled"
 msgstr "%s käytössä"
 
-#: extension.js:167
+#: extension.js:200
 msgid "Open the extension settings and customize your panels"
 msgstr "Avaa laajennusasetukset ja mukauta paneeleja"
 
-#: extension.js:170
+#: extension.js:203
 msgid "Open settings"
 msgstr "Avaa asetukset"
+
+#. metadata.json->name
+msgid "Transparent panels reloaded"
+msgstr "Transparent panels reloaded"
+
+#. metadata.json->description
+msgid ""
+"Make your panels transparent (or not) and change their color as you wish"
+msgstr "Säädä paneelin läpinäkyvyyttä ja väriä haluamallasi tavalla"
 
 #. settings-schema.json->section-general->description
 msgid "General"
 msgstr "Yleinen"
 
-#. settings-schema.json->transparency-type->description
-msgid "Type of transparency"
-msgstr "Läpinäkyvyyden valinta"
+#. settings-schema.json->transparency-amount->description
+#. settings-schema.json->transparency-amount->tooltip
+msgid "Opacity amount"
+msgstr "Peittävyys"
 
-#. settings-schema.json->transparency-type->options
-msgid "With shadow"
-msgstr "Varjostettu läpinäkyvyys"
+#. settings-schema.json->transparency-always->description
+msgid "Always transparent"
+msgstr "Aina läpinäkyvä"
 
-#. settings-schema.json->transparency-type->options
-msgid "Fully transparent"
-msgstr "Täysin läpinäkyvä"
-
-#. settings-schema.json->transparency-type->options
-msgid "Semi-transparent"
-msgstr "Osittain läpinäkyvä"
-
-#. settings-schema.json->transparency-type->tooltip
-msgid "Choose the type of transparency you want."
-msgstr "Valitse haluamasi läpinäkyvyys."
-
-#. settings-schema.json->theme-defined->description
-msgid "Use current theme styles"
-msgstr "Käytä nykyistä teeman tyyliä"
-
-#. settings-schema.json->theme-defined->tooltip
+#. settings-schema.json->transparency-always->tooltip
 msgid ""
-"Only for supported themes. Let the theme style the panels instead of using "
-"the extension presets. Use this in case the panels transparency is "
-"icorrectly set."
+"If enable the panels will always be transparent, if disable, only will be "
+"transparent if there is no maximized windows"
 msgstr ""
-"Vain tuetuille teemoille. Anna teeman tyyli paneeleille sen sijaan, että "
-"käytät laajennuksen asetuksia. Käytä tätä, jos paneelien läpinäkyvyys on "
-"asetettu oikein."
+"Paneelit ovat aina läpinäkyviä. Jos pois käytössä, ne ovat läpinäkyviä vain "
+"jos ikkunat eivät ole kokonäytössä"
 
-#. settings-schema.json->opacify->description
-msgid "Remove theme transparency (experimental)"
-msgstr "Poista teeman läpinäkyvyys (kokeellinen)"
+#. settings-schema.json->use-custom-panel-color->description
+msgid "Use custom panel color"
+msgstr "Käytä omaa paneelin väriä"
 
-#. settings-schema.json->opacify->tooltip
-msgid "Remove panel transparency when it's not transparent."
-msgstr "Poista paneelin läpinäkyvyys, kun se ei ole läpinäkyvä."
+#. settings-schema.json->custom-panel-color->description
+msgid "Custom panel color"
+msgstr "Oma paneelin väri"
 
 #. settings-schema.json->section-filters->description
-msgid "Filter panels"
-msgstr "Valitut paneelit"
+msgid "Filter panels (WIP)"
+msgstr "Valitse paneelit (WIP)"
 
 #. settings-schema.json->filters-description->description
-msgid "Select the panels that will be affected by this extension."
-msgstr "Valitse paneelit, joihin tämä laajennus vaikuttaa."
+msgid ""
+"Select the panels that will be affected by this extension. (Work in progress/"
+"not working)"
+msgstr "Valitse paneelit, joihin tämä laajennus vaikuttaa"
 
 #. settings-schema.json->panel-top->description
 msgid "Top panel"
-msgstr "Yläpaneeli"
+msgstr "Paneeli ylhäällä"
 
 #. settings-schema.json->panel-right->description
 msgid "Right panel"
-msgstr "Oikea paneeli"
+msgstr "Paneeli oikealla"
 
 #. settings-schema.json->panel-bottom->description
 msgid "Bottom panel"
-msgstr "Alapaneeli"
+msgstr "Paneeli alhaalla"
 
 #. settings-schema.json->panel-left->description
 msgid "Left panel"
-msgstr "Vasen paneeli"
-
-#. metadata.json->name
-msgid "Transparent panels reloaded"
-msgstr "Läpinäkyvät paneelit"
-
-#. metadata.json->description
-msgid "Make your panels transparent (or not) and change their color as you wish"
-msgstr "Paneelien läpinäkyvyys, kun ikkunoita ei ole maksimoitu"
+msgstr "Paneeli vasemmalla"

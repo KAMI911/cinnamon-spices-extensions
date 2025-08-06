@@ -12,12 +12,13 @@
             "Adjust opacity of windows" : "adjust_opacity",
             "Toggle show desktop"       : "desktop",
             "Switch between windows"    : "switch-windows",
+            "Adjust sound volume"       : "adjust_volume",
             "None"                      : "none"
         },
         "tooltip" : ""
     },
     "prev-fast-scroll" : {
-        "type" : "checkbox",
+        "type" : "switch",
         "default" : true,
         "description" : "Prevent accidental workspace/window switching on rapid scrolling",
         "tooltip" : ""
@@ -33,9 +34,19 @@
         "dependency" : "prev-fast-scroll"
     },
     "sep-scroll-action" : {
-        "type" : "checkbox",
+        "type" : "switch",
         "default" : false,
         "description" : "Independent actions for scrolling up and down",
+        "tooltip" : ""
+    },
+    "topleft-osd" : {
+        "type" : "generic",
+        "default" : false
+    },
+    "show-osd" : {
+        "type" : "switch",
+        "default" : false,
+        "description" : "Display OSD for workspace change notification",
         "tooltip" : ""
     },
     "scroll-action-up" : {
@@ -121,7 +132,7 @@
         "description" : "Mouse gestures: "
     },
     "use-gestures" : {
-        "type" : "checkbox",
+        "type" : "switch",
         "default" : true,
         "description" : "Use mouse gestures on the panel",
         "tooltip" : ""
@@ -179,18 +190,18 @@
         "description" : "Custom Commands: "
     },
     "cc1-action": {
-        "type": "entry", 
-        "description": "1st Custom Command:", 
+        "type": "entry",
+        "description": "1st Custom Command:",
         "default": "gnome-system-monitor"
     },
     "cc2-action": {
-        "type": "entry", 
-        "description": "2nd Custom Command:", 
+        "type": "entry",
+        "description": "2nd Custom Command:",
         "default": "gnome-terminal"
     },
     "cc3-action": {
-        "type": "entry", 
-        "description": "3rd Custom Command:", 
+        "type": "entry",
+        "description": "3rd Custom Command:",
         "default": ""
     },
     "div4" : {

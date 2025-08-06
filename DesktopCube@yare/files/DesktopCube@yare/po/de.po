@@ -1,13 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
+# DESKTOP CUBE
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# yare, 2017
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 21:49+0000\n"
+"Report-Msgid-Bugs-To: https://github.com/linuxmint/cinnamon-spices-"
+"extensions/issues\n"
+"POT-Creation-Date: 2025-01-09 21:14-0500\n"
 "PO-Revision-Date: 2021-03-02 22:50+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -26,132 +27,158 @@ msgstr "Desktop-Würfel"
 msgid "Compiz Cube-like animation for workspace switching"
 msgstr "»Compiz-Würfel«-ähnliche Animationen beim Wechsel der Arbeitsflächen"
 
-#. settings-schema.json->header1->description
+#. 2.0->settings-schema.json->header1->description
+#. 5.4->settings-schema.json->header1->description
 msgid "General"
 msgstr "Allgemein"
 
-#. settings-schema.json->animationTime->description
+#. 2.0->settings-schema.json->animationTime->description
 msgid "Animation duration"
 msgstr "Animationsdauer"
 
-#. settings-schema.json->pullaway->description
+#. 2.0->settings-schema.json->pullaway->description
 msgid "Pullaway proportion from screen"
 msgstr "Wegzieh-Entfernung vom Bildschirm"
 
-#. settings-schema.json->header2->description
+#. 2.0->settings-schema.json->header2->description
 msgid "Effects"
 msgstr "Effekte"
 
-#. settings-schema.json->scaleEffect->description
+#. 2.0->settings-schema.json->scaleEffect->description
 msgid "Scale effect"
 msgstr "Wegzieh-Effekt"
 
-#. settings-schema.json->unscaleEffect->description
+#. 2.0->settings-schema.json->unscaleEffect->description
 msgid "Unscale effect"
 msgstr "Heranzieh-Effekt"
 
-#. settings-schema.json->rotateEffect->description
+#. 2.0->settings-schema.json->rotateEffect->description
 msgid "Begin rotate effect"
 msgstr "Beginn des Dreheffekts"
 
-#. settings-schema.json->unrotateEffect->description
+#. 2.0->settings-schema.json->unrotateEffect->description
 msgid "End rotate effect"
 msgstr "Ende des Dreheffekts"
 
-#. settings-schema.json->header3->description
+#. 2.0->settings-schema.json->header3->description
+#. 5.4->settings-schema.json->header3->description
 msgid "System Settings"
 msgstr "Systemeinstellungen"
 
-#. settings-schema.json->workspaces_btn->description
+#. 2.0->settings-schema.json->workspaces_btn->description
+#. 5.4->settings-schema.json->workspaces_btn->description
 msgid "Open Cinnamon Settings to manage Workspaces"
 msgstr "Cinnamon-Einstellungen öffnen, um Arbeitsflächen zu verwalten"
 
-#~ msgid "easeInQuad"
-#~ msgstr "easeInQuad"
+#. 5.4->settings-schema.json->animationTimeSec->description
+#, fuzzy
+msgid "Animation duration (seconds)"
+msgstr "Animationsdauer"
 
-#~ msgid "easeOutQuad"
-#~ msgstr "easeOutQuad"
+#. 5.4->settings-schema.json->pullawayPercent->description
+msgid "Cube size (percent of screen size)"
+msgstr ""
 
-#~ msgid "easeInOutQuad"
-#~ msgstr "easeInOutQuad"
+#. 5.4->settings-schema.json->includePanels->description
+msgid "Include Panels"
+msgstr ""
 
-#~ msgid "easeInCubic"
-#~ msgstr "easeInCubic"
+#. 5.4->settings-schema.json->includePanels->tooltip
+msgid ""
+"Include the panels while animating. In most cases the panels are not "
+"properly painted or completely invisible anyhow, so it's best to leave this "
+"disabled"
+msgstr ""
 
-#~ msgid "easeOutCubic"
-#~ msgstr "easeOutCubic"
+#. 5.4->settings-schema.json->patchmoveToWorkspace->description
+msgid "Use Cube effect with the Workspace Switcher applet"
+msgstr ""
 
-#~ msgid "easeInOutCubic"
-#~ msgstr "easeInOutCubic"
+#. 5.4->settings-schema.json->patchmoveToWorkspace->tooltip
+msgid ""
+"Override the moveToWorkspace() API so that the Cube effect is used by the "
+"Workspace Switcher Applet when changing the current workspace"
+msgstr ""
 
-#~ msgid "easeInQuart"
-#~ msgstr "easeInQuart"
+#. 5.4->settings-schema.json->patchActivateWindow->description
+msgid "Use Cube effect when changing focus causes a workspace switch"
+msgstr ""
 
-#~ msgid "easeOutQuart"
-#~ msgstr "easeOutQuart"
+#. 5.4->settings-schema.json->patchActivateWindow->tooltip
+msgid ""
+"Override the activateWindow() API so that when a window on another workspace "
+"is given the focus, the Cube effect is used to change the current workspace"
+msgstr ""
 
-#~ msgid "easeInOutQuart"
-#~ msgstr "easeInOutQuart"
+#. 5.4->settings-schema.json->header2->description
+#, fuzzy
+msgid "Effect Easing"
+msgstr "Effekte"
 
-#~ msgid "easeInQuint"
-#~ msgstr "easeInQuint"
+#. 5.4->settings-schema.json->newScaleEffect->description
+msgid "Scale easing"
+msgstr ""
 
-#~ msgid "easeOutQuint"
-#~ msgstr "easeOutQuint"
+#. 5.4->settings-schema.json->newScaleEffect->options
+#. 5.4->settings-schema.json->newRotateEffect->options
+msgid "Back"
+msgstr ""
 
-#~ msgid "easeInOutQuint"
-#~ msgstr "easeInOutQuint"
+#. 5.4->settings-schema.json->newScaleEffect->options
+#. 5.4->settings-schema.json->newRotateEffect->options
+msgid "Bounce"
+msgstr ""
 
-#~ msgid "easeInSine"
-#~ msgstr "easeInSine"
+#. 5.4->settings-schema.json->newScaleEffect->options
+#. 5.4->settings-schema.json->newRotateEffect->options
+msgid "Circ"
+msgstr ""
 
-#~ msgid "easeOutSine"
-#~ msgstr "easeOutSine"
+#. 5.4->settings-schema.json->newScaleEffect->options
+#. 5.4->settings-schema.json->newRotateEffect->options
+msgid "Cubic"
+msgstr ""
 
-#~ msgid "easeInOutSine"
-#~ msgstr "easeInOutSine"
+#. 5.4->settings-schema.json->newScaleEffect->options
+#. 5.4->settings-schema.json->newRotateEffect->options
+msgid "Elastic"
+msgstr ""
 
-#~ msgid "easeInExpo"
-#~ msgstr "easeInExpo"
+#. 5.4->settings-schema.json->newScaleEffect->options
+#. 5.4->settings-schema.json->newRotateEffect->options
+msgid "Expo"
+msgstr ""
 
-#~ msgid "easeOutExpo"
-#~ msgstr "easeOutExpo"
+#. 5.4->settings-schema.json->newScaleEffect->options
+#. 5.4->settings-schema.json->newRotateEffect->options
+msgid "Sine"
+msgstr ""
 
-#~ msgid "easeInOutExpo"
-#~ msgstr "easeInOutExpo"
+#. 5.4->settings-schema.json->newScaleEffect->options
+#. 5.4->settings-schema.json->newRotateEffect->options
+msgid "Quad"
+msgstr ""
 
-#~ msgid "easeInCirc"
-#~ msgstr "easeInCirc"
+#. 5.4->settings-schema.json->newScaleEffect->options
+#. 5.4->settings-schema.json->newRotateEffect->options
+msgid "Quart"
+msgstr ""
 
-#~ msgid "easeOutCirc"
-#~ msgstr "easeOutCirc"
+#. 5.4->settings-schema.json->newScaleEffect->options
+#. 5.4->settings-schema.json->newRotateEffect->options
+msgid "Quint"
+msgstr ""
 
-#~ msgid "easeInOutCirc"
-#~ msgstr "easeInOutCirc"
+#. 5.4->settings-schema.json->newRotateEffect->description
+#, fuzzy
+msgid "Rotate easing"
+msgstr "Ende des Dreheffekts"
 
-#~ msgid "easeInElastic"
-#~ msgstr "easeInElastic"
+#. 5.4->settings-schema.json->easing_btn->description
+msgid "Open easing information website"
+msgstr ""
 
-#~ msgid "easeOutElastic"
-#~ msgstr "easeOutElastic"
-
-#~ msgid "easeInOutElastic"
-#~ msgstr "easeInOutElastic"
-
-#~ msgid "easeInBack"
-#~ msgstr "easeInBack"
-
-#~ msgid "easeOutBack"
-#~ msgstr "easeOutBack"
-
-#~ msgid "easeInOutBack"
-#~ msgstr "easeInOutBack"
-
-#~ msgid "easeInBounce"
-#~ msgstr "easeInBounce"
-
-#~ msgid "easeOutBounce"
-#~ msgstr "easeOutBounce"
-
-#~ msgid "easeInOutBounce"
-#~ msgstr "easeInOutBounce"
+#. 5.4->settings-schema.json->hotkeys_btn->description
+#, fuzzy
+msgid "Open Cinnamon Keyboard Settings to manage Workspace hotkeys"
+msgstr "Cinnamon-Einstellungen öffnen, um Arbeitsflächen zu verwalten"

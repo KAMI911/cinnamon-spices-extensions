@@ -1,30 +1,34 @@
-# SOME DESCRIPTIVE TITLE.
+# DESKTOP SCROLLER
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# ccadeptic23, 2017
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 19:29+0000\n"
+"Report-Msgid-Bugs-To: https://github.com/linuxmint/cinnamon-spices-"
+"extensions/issues\n"
+"POT-Creation-Date: 2024-12-22 12:37-0500\n"
 "PO-Revision-Date: 2021-03-02 20:43+0100\n"
+"Last-Translator: \n"
 "Language-Team: \n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.3\n"
-"Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: de\n"
 
 #. metadata.json->name
 msgid "Desktop Scroller"
 msgstr "Arbeitsflächen-Scroller"
 
 #. metadata.json->description
-msgid "Switch between desktops by scrolling at left and right edges of the screen."
-msgstr "Wechseln der Arbeitsfläche durch Scrollen am linken und rechten Bildschirmrand."
+msgid ""
+"Switch between desktops by scrolling at left and right edges of the screen."
+msgstr ""
+"Wechseln der Arbeitsfläche durch Scrollen am linken und rechten "
+"Bildschirmrand."
 
 #. settings-schema.json->showDirectionArrow->description
 msgid "Show direction arrow"
@@ -32,7 +36,8 @@ msgstr "Richtungspfeil anzeigen"
 
 #. settings-schema.json->showDirectionArrow->tooltip
 msgid "Check this to show an arrow indicating scroll direction."
-msgstr "Aktivieren, um einen Pfeil einzublenden, der die Scrollrichtung anzeigt."
+msgstr ""
+"Aktivieren, um einen Pfeil einzublenden, der die Scrollrichtung anzeigt."
 
 #. settings-schema.json->activationAreaWidth->units
 msgid "pixels"
@@ -51,5 +56,19 @@ msgid "Show activation areas"
 msgstr "Aktivierungsbereiche anzeigen"
 
 #. settings-schema.json->showActivationAreas->tooltip
-msgid "Check this to show the areas over which scrolling will switch the desktop."
-msgstr "Aktivieren, um die Bereiche anzuzeigen, über die beim Scrollen die Arbeitsfläche gewechselt wird."
+msgid ""
+"Check this to show the areas over which scrolling will switch the desktop."
+msgstr ""
+"Aktivieren, um die Bereiche anzuzeigen, über die beim Scrollen die "
+"Arbeitsfläche gewechselt wird."
+
+#. settings-schema.json->useSwitcherExtension->description
+msgid "Use a workspace switcher extension if installed"
+msgstr ""
+
+#. settings-schema.json->useSwitcherExtension->tooltip
+msgid ""
+"Allow a Cinnamon extensions to animate the workspace change. This option has "
+"no effect unless a compatible extension is installed. Requires Desktop Cube "
+"2.0.2 or Flipper 2.0.0 and Cinnamon 5.4 or better."
+msgstr ""

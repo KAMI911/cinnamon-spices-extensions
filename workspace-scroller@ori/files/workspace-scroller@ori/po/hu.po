@@ -2,16 +2,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 22:28+0000\n"
-"PO-Revision-Date: 2021-09-26 08:26+0200\n"
+"Report-Msgid-Bugs-To: https://github.com/linuxmint/cinnamon-spices-"
+"extensions/issues\n"
+"POT-Creation-Date: 2024-12-22 17:57-0500\n"
+"PO-Revision-Date: 2025-04-12 08:26+0200\n"
 "Last-Translator: Kálmán „KAMI” Szalai <kami911@gmail.com>\n"
 "Language-Team: \n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.4.4\n"
 
 #. metadata.json->name
 msgid "Workspace Scroller"
@@ -19,7 +20,8 @@ msgstr "Munkaterület görgető"
 
 #. metadata.json->description
 msgid "Switch workspaces using mouse scroll at screen edges."
-msgstr "Munkaterület váltása a képernyő éleinél történő egérgörgő használattal."
+msgstr ""
+"Munkaterület váltása a képernyő éleinél történő egérgörgő használattal."
 
 #. settings-schema.json->edgesHeader->description
 msgid "Edges"
@@ -38,7 +40,7 @@ msgstr "Bal oldali él használata"
 #. settings-schema.json->BottomLeftUp->description
 #. settings-schema.json->BottomRightUp->description
 msgid " — Scroll up: "
-msgstr " — Görgetés felfelé:"
+msgstr " — Görgetés felfelé: "
 
 #. settings-schema.json->LeftUp->options
 #. settings-schema.json->LeftDown->options
@@ -125,7 +127,7 @@ msgstr "Közszemle megjelenítése"
 #. settings-schema.json->BottomLeftDown->description
 #. settings-schema.json->BottomRightDown->description
 msgid " — Scroll down: "
-msgstr " — Görgetés lefelé:"
+msgstr " — Görgetés lefelé: "
 
 #. settings-schema.json->Right->description
 msgid "Use right edge"
@@ -166,3 +168,22 @@ msgstr "képpont"
 #. settings-schema.json->cornerSize->description
 msgid "Corners areas size: "
 msgstr "Lekerekített sarkok mérete: "
+
+#. settings-schema.json->generalHeader->description
+msgid "General"
+msgstr "Általános"
+
+#. settings-schema.json->useSwitcherExtension->description
+msgid "Use a workspace switcher extension if installed"
+msgstr "Használjon munkaterület-váltó bővítményt, ha telepítve van"
+
+#. settings-schema.json->useSwitcherExtension->tooltip
+msgid ""
+"Allow a Cinnamon extension to animate the workspace change. This option has "
+"no effect unless a compatible extension is installed. Requires Desktop Cube "
+"2.0.2 or Flipper 2.0.0 and Cinnamon 5.4 or better."
+msgstr ""
+"Engedélyezze a Cinnamon bővítményt a munkaterület változásának "
+"animálásához. Ennek az opciónak nincs hatása, hacsak nincs telepítve egy "
+"kompatibilis bővítmény. Asztal Kocka 2.0.2 vagy Flipper 2.0.0 és Cinnamon "
+"5.4 vagy jobb szükséges."

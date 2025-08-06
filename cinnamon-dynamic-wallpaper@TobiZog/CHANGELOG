@@ -1,3 +1,48 @@
+# Version 2.5
+- Switch from libheif to imagemagick, HEIC conversion is now possible on Arch and Fedora!
+- Three new image sets: desert, island, lake
+
+# Version 2.4
+- Adding Login window support
+- Adding Russian translation (Thanks to blogdron)
+- Adding Hungarian translation (Thanks to vajdao)
+- Bugfix: Time period calculation on locations near the dateline, like Japan
+
+# Version 2.3
+- Adding Dutch translation
+- Adding German translation
+- Adding Spanish translation (Thanks to haggen88)
+
+# Version 2.2
+- Bugfixes
+- Migrate code to MVVM pattern
+- Adding option to change the location provider
+- Adding example image for dynamic background color
+
+# Version 2.1
+- Bugfixes
+- Smaller UI for displays with reduced resolution (< 1000px height)
+
+# Version 2.0
+- New App icon
+- Preferences window redesign - All settings are now in one window accessable!
+- Graphic visualizing of the time periods of a day with a bar chart
+- Adding custom time periods by user choice
+- Adding folder as image source
+- Option to display image on lock screens
+- Bugfixes
+- Remove support for Cinnamon 5.2 and older
+- Apply and OK button to test settings without closing the window
+
+# Version 1.4
+- Log System
+- Bugfixes
+- Display times in Image Configurator
+- Display time of last location update in Preferences
+
+# Version 1.3
+- Adding option to stretch the image over multiple displays
+
 # Version 1.2
 - Compatibility with Cinnamon 4.8 and higher
 - Notification on first start
